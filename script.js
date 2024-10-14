@@ -5,10 +5,15 @@ document.addEventListener('DOMContentLoaded', function () {
     fetch('article.json')
         .then(response => response.json())
         .then(data => {
+            // Update the page's meta tags dynamically
+            document.querySelector('meta[name="description"]').setAttribute("content", data.excerpt);
+            document.querySelector('meta[name="author"]').setAttribute("content", data.meta.author);
+            document.title = data.title;
+
             // Dynamically update the featured image
             document.getElementById('featuredImage').src = data.featuredImage;
 
-            // Update meta information
+            // Update meta information (date and author)
             document.getElementById('articleDate').textContent = new Date(data.meta.date).toLocaleDateString();
             document.getElementById('articleAuthor').textContent = data.meta.author;
 
@@ -16,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('articleTitle').textContent = data.title;
             document.getElementById('articleExcerpt').textContent = data.excerpt;
 
-            // Update article tags
+            // Update article tags dynamically
             const tagsContainer = document.getElementById('articleTags');
             data.tags.forEach(tag => {
                 const tagElement = document.createElement('li');
@@ -27,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 tagsContainer.appendChild(tagElement);
             });
 
-            // Insert the introduction
+            // Insert the introduction dynamically
             document.getElementById('articleIntroduction').textContent = data.content.introduction;
 
             // Insert applications dynamically
@@ -41,13 +46,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 applicationsSection.appendChild(appBody);
             });
 
-            // Insert benefits section
+            // Insert benefits section dynamically
             document.getElementById('articleBenefits').textContent = data.content.benefits;
 
-            // Insert conclusion
+            // Insert conclusion dynamically
             document.getElementById('articleConclusion').textContent = data.content.conclusion;
         })
         .catch(error => {
-            console.error('Error fetching the article content:', error);
+            console.error('Error fetching article content:', error);
         });
 });
