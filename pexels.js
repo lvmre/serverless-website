@@ -1,22 +1,40 @@
-// Wait for DOM to fully load
-document.addEventListener('DOMContentLoaded', function () {
+// Add your Pexels API key here
+const PEXELS_API_KEY = 'kANnqaEo8gJwrYUDBMJM75iGn0TWq0JHGBGLPWE3eziOX3NPvFc86Ouy';
 
-    // Fetch the JSON file
+// Fetch image from Pexels API based on a search term
+function fetchPexelsImage(searchTerm) {
+    fetch(`https://api.pexels.com/v1/search?query=${searchTerm}&per_page=1`, {
+        headers: {
+            Authorization: PEXELS_API_KEY
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Get the first image from the response
+        const imageUrl = data.photos[0].src.landscape;
+
+        // Update the featured image on the page
+        document.getElementById('featuredImage').src = imageUrl;
+    })
+    .catch(error => {
+        console.error('Error fetching image from Pexels:', error);
+    });
+}
+
+// Wait for the DOM to load
+document.addEventListener('DOMContentLoaded', function () {
+    // Fetch an image related to "Artificial Intelligence"
+    fetchPexelsImage('Artificial Intelligence');
+    
+    // Fetch the JSON article content (from the previous example)
     fetch('article.json')
         .then(response => response.json())
         .then(data => {
-            // Dynamically update the featured image
-            document.getElementById('featuredImage').src = data.featuredImage;
-
-            // Update meta information
+            document.getElementById('articleTitle').textContent = data.title;
+            document.getElementById('articleExcerpt').textContent = data.excerpt;
             document.getElementById('articleDate').textContent = new Date(data.meta.date).toLocaleDateString();
             document.getElementById('articleAuthor').textContent = data.meta.author;
 
-            // Update article title and excerpt
-            document.getElementById('articleTitle').textContent = data.title;
-            document.getElementById('articleExcerpt').textContent = data.excerpt;
-
-            // Update article tags
             const tagsContainer = document.getElementById('articleTags');
             data.tags.forEach(tag => {
                 const tagElement = document.createElement('li');
@@ -27,10 +45,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 tagsContainer.appendChild(tagElement);
             });
 
-            // Insert the introduction
             document.getElementById('articleIntroduction').textContent = data.content.introduction;
 
-            // Insert applications dynamically
             const applicationsSection = document.getElementById('applicationsSection');
             data.content.applications.forEach(application => {
                 const appTitle = document.createElement('h3');
@@ -41,13 +57,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 applicationsSection.appendChild(appBody);
             });
 
-            // Insert benefits section
             document.getElementById('articleBenefits').textContent = data.content.benefits;
-
-            // Insert conclusion
             document.getElementById('articleConclusion').textContent = data.content.conclusion;
         })
         .catch(error => {
-            console.error('Error fetching the article content:', error);
+            console.error('Error fetching article content:', error);
         });
 });
